@@ -10,10 +10,39 @@ import { AuthInput } from 'components';
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { login } from 'api/auth';
+
+import Swal from 'sweetalert2';
 
 const LoginPage = () => {
-  const [userName, setUserName] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  async function handleClick() {
+    if (username.length === 0) return;
+    if (password.length === 0) return;
+
+    const { success, authToken } = await login({ username, password });
+    if (success) {
+      localStorage.setItem('authToken', authToken);
+      Swal.fire({
+        position: 'top',
+        title: 'Login Successful!',
+        timer: 1000,
+        icon: 'success',
+        showConfirmButton: false,
+      });
+      return;
+    }
+
+    Swal.fire({
+      position: 'top',
+      title: 'Login Failed!',
+      timer: 1000,
+      icon: 'error',
+      showConfirmButton: false,
+    });
+  }
 
   return (
     <AuthContainer>
@@ -25,9 +54,9 @@ const LoginPage = () => {
       <AuthInputContainer>
         <AuthInput
           label="Username"
-          value={userName}
+          value={username}
           placeholder="Please Enter Your Username"
-          onChange={(userNameInputValue) => setUserName(userNameInputValue)}
+          onChange={(usernameInputValue) => setUsername(usernameInputValue)}
         />
       </AuthInputContainer>
 
@@ -40,7 +69,7 @@ const LoginPage = () => {
           onChange={(passwordInputValue) => setPassword(passwordInputValue)}
         />
       </AuthInputContainer>
-      <AuthButton>Login</AuthButton>
+      <AuthButton onClick={handleClick}>Login</AuthButton>
       <Link to="/signup">
         <AuthLinkText>Register</AuthLinkText>
       </Link>
