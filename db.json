@@ -1,18 +1,13 @@
 {
   "todos": [
     {
-      "title": "Learn react-router",
-      "isDone": true,
-      "id": 1
-    },
-    {
-      "title": "Learn to create custom hooks",
+      "title": "Learn to create custom hook",
       "isDone": false,
       "id": 2
     },
     {
       "title": "Learn to use context",
-      "isDone": true,
+      "isDone": false,
       "id": 3
     },
     {
