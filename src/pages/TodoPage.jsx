@@ -1,47 +1,31 @@
+import { useState, useEffect } from 'react';
 import { Footer, Header, TodoCollection, TodoInput } from 'components';
-import { useState } from 'react';
-
-const dummyTodos = [
-  {
-    title: 'Learn react-router',
-    isDone: true,
-    id: 1,
-  },
-  {
-    title: 'Learn to create custom hooks',
-    isDone: false,
-    id: 2,
-  },
-  {
-    title: 'Learn to use context',
-    isDone: true,
-    id: 3,
-  },
-  {
-    title: 'Learn to implement auth',
-    isDone: false,
-    id: 4,
-  },
-];
+import { createTodos, getTodos } from '../api/todos';
 
 const TodoPage = () => {
   const [inputValue, setInputValue] = useState('');
-  const [todos, setTodos] = useState(dummyTodos);
+  const [todos, setTodos] = useState([]);
 
   function handleChange(value) {
     setInputValue(value);
     console.log(inputValue);
   }
 
-  function handleAddTodo() {
+  async function handleAddTodo() {
     if (inputValue.length === 0) return;
+    const data = await createTodos({
+      title: inputValue,
+      isDone: false,
+    });
+
     setTodos((prevTodos) => {
       return [
         ...prevTodos,
         {
-          title: inputValue,
-          isDone: false,
-          id: Math.random() * 100,
+          title: data.title,
+          isDone: data.isDone,
+          id: data.id,
+          isEdit: false,
         },
       ];
     });
@@ -107,6 +91,23 @@ const TodoPage = () => {
       return prevTodos.filter((todo) => todo.id !== id);
     });
   }
+
+  useEffect(() => {
+    const getTodosAsync = async () => {
+      try {
+        const todos = await getTodos();
+        setTodos(
+          todos.map((todo) => ({
+            ...todo,
+            isEdit: false,
+          })),
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getTodosAsync();
+  }, []);
 
   return (
     <div>
