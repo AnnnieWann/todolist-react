@@ -8,11 +8,11 @@ import {
 import { ACLogoIcon } from 'assets/images';
 import { AuthInput } from 'components';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import Swal from 'sweetalert2';
-import { register } from '../api/auth';
+import { checkPremission, register } from '../api/auth';
 
 const SignUpPage = () => {
   const [username, setUsername] = useState('');
@@ -52,6 +52,18 @@ const SignUpPage = () => {
       showConfirmButton: false,
     });
   }
+
+  useEffect(() => {
+    async function checkTokenIsVaild() {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) return;
+      const result = await checkPremission(authToken);
+      if (result) {
+        navigate('/todos');
+      }
+    }
+    checkTokenIsVaild();
+  }, [navigate]);
 
   return (
     <AuthContainer>
