@@ -18,7 +18,6 @@ const TodoPage = () => {
 
   function handleChange(value) {
     setInputValue(value);
-    console.log(inputValue);
   }
 
   async function handleAddTodo() {
