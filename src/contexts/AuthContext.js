@@ -1,4 +1,4 @@
-import { checkPremission, login, register } from 'api/auth';
+import { checkPremission, login, register } from '../api/auth';
 import { createContext, useEffect, useState, useContext } from 'react';
 import * as jwt from 'jsonwebtoken';
 import { useLocation } from 'react-router-dom';
@@ -42,14 +42,14 @@ export const AuthProvider = ({ children }) => {
   }, [pathname]);
 
   return (
-    <AuthProvider
+    <AuthContext.Provider
       value={{
         isAuthenticated,
         currentMember: payload && {
           id: payload.sub,
           name: payload.name,
         },
-        register: async ({ data }) => {
+        register: async (data) => {
           const { success, authToken } = await register({
             username: data.username,
             password: data.password,
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
           }
           return success;
         },
-        login: async ({ data }) => {
+        login: async (data) => {
           const { success, authToken } = await login({
             username: data.username,
             password: data.password,
@@ -90,6 +90,6 @@ export const AuthProvider = ({ children }) => {
       }}
     >
       {children}
-    </AuthProvider>
+    </AuthContext.Provider>
   );
 };

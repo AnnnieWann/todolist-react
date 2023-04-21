@@ -2,27 +2,19 @@ import { useState, useEffect } from 'react';
 import { Footer, Header, TodoCollection, TodoInput } from 'components';
 import { createTodos, getTodos, patchTodos, deleteTodos } from '../api/todos';
 import { useNavigate } from 'react-router-dom';
-import { checkPremission } from '../api/auth';
+import { useAuth } from '../contexts/AuthContext';
 
 const TodoPage = () => {
   const [inputValue, setInputValue] = useState('');
   const [todos, setTodos] = useState([]);
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function checkTokenIsVaild() {
-      const authToken = localStorage.getItem('authToken');
-      if (!authToken) {
-        navigate('/login');
-      }
-
-      const result = await checkPremission(authToken);
-      if (!result) {
-        navigate('/login');
-      }
+    if (!isAuthenticated) {
+      navigate('/login');
     }
-    checkTokenIsVaild();
-  }, [navigate]);
+  }, [navigate, isAuthenticated]);
 
   function handleChange(value) {
     setInputValue(value);

@@ -12,12 +12,13 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import Swal from 'sweetalert2';
-import { checkPremission, register } from '../api/auth';
+import { useAuth } from '../contexts/AuthContext';
 
 const SignUpPage = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   async function handleClick() {
@@ -25,14 +26,13 @@ const SignUpPage = () => {
     if (password.length === 0) return;
     if (email.length === 0) return;
 
-    const { success, authToken } = await register({
+    const success = await register({
       username,
       password,
       email,
     });
 
     if (success) {
-      localStorage.setItem('authToken', authToken);
       Swal.fire({
         position: 'top',
         title: 'Register Successful!',
@@ -40,7 +40,6 @@ const SignUpPage = () => {
         icon: 'success',
         showConfirmButton: false,
       });
-      navigate('/todos');
       return;
     }
 
@@ -54,16 +53,10 @@ const SignUpPage = () => {
   }
 
   useEffect(() => {
-    async function checkTokenIsVaild() {
-      const authToken = localStorage.getItem('authToken');
-      if (!authToken) return;
-      const result = await checkPremission(authToken);
-      if (result) {
-        navigate('/todos');
-      }
+    if (isAuthenticated) {
+      navigate('/todos');
     }
-    checkTokenIsVaild();
-  }, [navigate]);
+  }, [navigate, isAuthenticated]);
 
   return (
     <AuthContainer>
